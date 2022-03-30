@@ -3,27 +3,16 @@
   <template v-slot:header>Login Page</template>
   <template v-slot:body>
     <div class="auth-container">
-<!--      <v-form @submit.prevent="onSubmit">-->
-<!--        <v-container>-->
-<!--          <v-row>-->
-<!--            <v-text-field-->
-<!--                v-model="login"-->
-<!--                label="login"-->
-<!--                required-->
-<!--            ></v-text-field>-->
-<!--          </v-row>-->
-<!--          <v-row>-->
-<!--            <v-text-field-->
-<!--                v-model="password"-->
-<!--                label="password"-->
-<!--                required-->
-<!--            ></v-text-field>-->
-<!--          </v-row>-->
-<!--        </v-container>-->
-<!--        <v-row>-->
-<!--          <v-btn color="primary">Submit</v-btn>-->
-<!--        </v-row>-->
-<!--      </v-form>-->
+      <n-form ref="formRef" :model="formValue">
+        <n-form-item label="Login" path="login">
+          <n-input v-model:value="formValue.login" placeholder="login value" />
+        </n-form-item>
+        <n-form-item label="Password" path="password">
+          <n-input v-model:value="formValue.password" placeholder="password value" />
+        </n-form-item>
+        <n-button type="primary">Submit</n-button>
+
+      </n-form>
     </div>
   </template>
 </DefaultPage>
@@ -33,23 +22,22 @@
 //import { inject } from "vue";
 
 import DefaultPage from "@/pages/DefaultPage";
+import { ref } from 'vue';
 
 export default {
   name: "LoginPage",
   components: { DefaultPage },
   setup() {
-    //const axios = inject('axios')
-    //axios.get()
-  },
-  data: () => ({
-    login: '',
-    password: '',
-  }),
-  methods: {
-    onSubmit: function() {
-      console.log('SUBMITTED!')
+    const formRef = ref(null);
+
+    return {
+      formRef,
+      formValue: ref({
+        login: '',
+        password: ''
+      })
     }
-  }
+  },
 }
 </script>
 

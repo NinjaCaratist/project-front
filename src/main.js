@@ -3,9 +3,8 @@ import './assets/styles/main.scss'
 
 import { createApp } from 'vue'
 import App from './App.vue'
-import { loadFonts } from './plugins/webfontloader'
-
-loadFonts()
+import naive from 'naive-ui'
 
 createApp(App)
+    .use(naive)
     .mount('#app')
