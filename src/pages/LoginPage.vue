@@ -10,8 +10,7 @@
         <n-form-item label="Password" path="password">
           <n-input v-model:value="formValue.password" placeholder="password value" />
         </n-form-item>
-        <n-button type="primary">Submit</n-button>
-
+        <n-button type="primary" style="width: 100%" @click="onSubmit">Submit</n-button>
       </n-form>
     </div>
   </template>
@@ -19,25 +18,35 @@
 </template>
 
 <script>
-//import { inject } from "vue";
-
 import DefaultPage from "@/pages/DefaultPage";
 import { ref } from 'vue';
+import { inject } from "vue";
 
 export default {
   name: "LoginPage",
   components: { DefaultPage },
+
   setup() {
     const formRef = ref(null);
+    const axios = inject('axios');
+
+    const onSubmit = () => {
+      axios.post('http://localhost:8081/api', this.formValue).then(function(response) {
+        console.log(response)
+      }, function(error) {
+        console.error(error)
+      })
+    }
 
     return {
+      onSubmit,
       formRef,
       formValue: ref({
         login: '',
         password: ''
       })
     }
-  },
+  }
 }
 </script>
 
