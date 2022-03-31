@@ -4,11 +4,11 @@
   <template v-slot:body>
     <div class="auth-container">
       <n-form ref="formRef" :model="formValue">
-        <n-form-item label="Login" path="login">
-          <n-input v-model:value="formValue.login" placeholder="login value" />
+        <n-form-item label="Username" path="username">
+          <n-input v-model:value="formValue.username" placeholder="username" />
         </n-form-item>
         <n-form-item label="Password" path="password">
-          <n-input v-model:value="formValue.password" placeholder="password value" />
+          <n-input v-model:value="formValue.password" placeholder="password" />
         </n-form-item>
         <n-button type="primary" style="width: 100%" @click="onSubmit">Submit</n-button>
       </n-form>
@@ -17,37 +17,32 @@
 </DefaultPage>
 </template>
 
-<script>
+<script setup>
 import DefaultPage from "@/pages/DefaultPage";
+
 import { ref } from 'vue';
 import { inject } from "vue";
 
-export default {
-  name: "LoginPage",
-  components: { DefaultPage },
+const formRef = ref(null);
+const axios = inject('axios');
 
-  setup() {
-    const formRef = ref(null);
-    const axios = inject('axios');
+const formValue = ref({
+  username: '',
+  password: ''
+})
 
-    const onSubmit = () => {
-      axios.post('http://localhost:8081/api', this.formValue).then(function(response) {
-        console.log(response)
-      }, function(error) {
-        console.error(error)
-      })
-    }
+async function onSubmit() {
+  const response  = await axios.post('http://localhost:8081/api/login', formValue.value);
+  const user      = response.data.user;
+  const token     = response.data.token;
 
-    return {
-      onSubmit,
-      formRef,
-      formValue: ref({
-        login: '',
-        password: ''
-      })
-    }
-  }
+  this.$store.dispatch('user', user);
+
+  localStorage.setItem('accessToken', token.accessToken);
+  localStorage.setItem('refreshToken', token.refreshToken);
+  localStorage.setItem('currentUser', user);
 }
+
 </script>
 
 <style>
