@@ -34,6 +34,10 @@ export default {
 }
 
 .header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   width: 80%;
   height: 3rem;
 
@@ -42,8 +46,8 @@ export default {
 
 .header-text {
   margin: 0;
-  color: #42a8e1;
-  text-shadow: 4px 4px 0 #ab0033;
+  color: #6494d6;
+  text-shadow: 4px 4px 0 #404040;
 
   font-size: 4rem;
   font-weight: bold;

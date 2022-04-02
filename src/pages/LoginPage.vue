@@ -18,13 +18,19 @@
 </template>
 
 <script setup>
+/* eslint-disable */
 import DefaultPage from "@/pages/DefaultPage";
 
-import { ref } from 'vue';
+import { ref } from "vue";
 import { inject } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 const formRef = ref(null);
 const axios = inject('axios');
+
+const store = useStore();
+const router = useRouter();
 
 const formValue = ref({
   username: '',
@@ -32,17 +38,21 @@ const formValue = ref({
 })
 
 async function onSubmit() {
-  const response  = await axios.post('http://localhost:8081/api/login', formValue.value);
-  const user      = response.data.user;
-  const token     = response.data.token;
+  // const response  = await axios.post('http://localhost:8080/api/login', formValue.value);
+  // const user      = response.data.user;
+  // const token     = response.data.token;
+  //
+  // console.log(store.state.user)
+  //
+  // localStorage.setItem('ACCESS_TOKEN', token.accessToken);
+  // localStorage.setItem('REFRESH_TOKEN', token.refreshToken);
+  // localStorage.setItem('CURRENT_USER', user);
+  //
+  // console.log(user)
 
-  this.$store.dispatch('user', user);
-
-  localStorage.setItem('accessToken', token.accessToken);
-  localStorage.setItem('refreshToken', token.refreshToken);
-  localStorage.setItem('currentUser', user);
+  await router.push('/');
 }
-
+/* eslint enable */
 </script>
 
 <style>
