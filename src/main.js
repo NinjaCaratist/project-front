@@ -19,6 +19,9 @@ import RegistrationPage from '@/pages/Auth/RegistrationPage'
 import MainPage from '@/pages/MainPage'
 import TestPage from '@/pages/Tests/TestPage'
 
+import AddTest from '@/pages/Tests/components/AddTest';
+import ConfigureTest from '@/pages/Tests/components/ConfigureTest';
+
 //import { authGuard } from "@/guards/authGuards";
 
 const state = {
@@ -59,7 +62,17 @@ const routes = [
             {
                 name: 'tests',
                 path: 'tests',
-                component: TestPage
+                component: TestPage,
+            },
+            {
+                name: 'addTest',
+                path: 'add-test',
+                component: AddTest,
+            },
+            {
+                name: 'configureTest',
+                path: 'configure-test/:testId',
+                component: ConfigureTest
             }
         ]
     },
@@ -83,10 +96,10 @@ const router = createRouter({
 const app = createApp(App);
 
 axios.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('TOKEN');
 
     if (token) {
-        config.headers.common['token'] = token;
+        config.headers.common['x-auth-token'] = token;
     }
 
     return config;
