@@ -3,7 +3,7 @@
     <n-list bordered>
       <template #header>All the tests</template>
       <n-list-item v-for="test in tests" :key="test.id">
-        <test name="test.name" description="test.description"></test>
+        <test :name="test.name" :description="test.description"></test>
       </n-list-item>
     </n-list>
   </div>

@@ -23,6 +23,9 @@
         <n-form-item label="Password" path="password">
           <n-input v-model:value="formValue.password" placeholder="password" type="password"/>
         </n-form-item>
+
+        <n-select class="role-select" v-model:value="role" :options="roleOptions"></n-select>
+
         <n-button type="primary" style="width: 100%" @click="onSubmit">Register</n-button>
       </n-form>
     </div>
@@ -51,9 +54,12 @@ const formValue = ref({
   password: '',
 });
 
+const role = ref('USER');
+const roleOptions = [{ label: 'User', value: 'USER' }, { label: 'Examiner', value: 'EXAM' }];
+
 async function onSubmit() {
   const data = formValue.value;
-  data.role = 'EXAM';
+  data.role = role;
 
   const response  = await axios.post('http://localhost:8080/security/registration', data);
 
@@ -72,7 +78,11 @@ async function onSubmit() {
 }
 
 .auth-container {
-  height: 450px;
+  height: 500px;
   width: 600px;
+}
+
+.role-select {
+  margin-bottom: 24px;
 }
 </style>
