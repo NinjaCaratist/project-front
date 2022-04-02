@@ -6,7 +6,7 @@
       </h1>
     </div>
 
-    <div class="container default-container">
+    <div class="container default-container" v-bind:class="{ overflowed }">
       <slot name="body"></slot>
     </div>
   </div>
@@ -14,7 +14,13 @@
 
 <script>
 export default {
-  name: "DefaultPage"
+  name: "DefaultPage",
+  props: {
+    overflowed: {
+      type: Boolean,
+      default: false
+    }
+  }
 }
 </script>
 
@@ -46,7 +52,7 @@ export default {
 
 .header-text {
   margin: 0;
-  color: #6494d6;
+  color: #5a86c5;
   text-shadow: 4px 4px 0 #404040;
 
   font-size: 4rem;
@@ -57,9 +63,13 @@ export default {
 .container {
   width: 80%;
   height: 30rem;
-  overflow-y: scroll;
+  overflow: hidden;
 
   margin: 5rem auto auto auto;
+}
+
+.container.overflowed {
+  overflow-y: scroll;
 }
 
 </style>

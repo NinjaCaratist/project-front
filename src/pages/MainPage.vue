@@ -1,7 +1,9 @@
 <template>
 <div class="wrapper">
   <div class="navbar">
-    <n-menu mode="horizontal" :options="menuOptions"></n-menu>
+    <n-space justify="end">
+      <n-menu mode="horizontal" :options="menuOptions"></n-menu>
+    </n-space>
   </div>
   <div class="body">
     <router-view></router-view>
@@ -11,36 +13,30 @@
 
 <script setup>
 import { h } from "vue";
-//import { RouterLink } from "vue-router";
+import { RouterLink } from "vue-router";
 
 const menuOptions = [
   {
-    label: () =>
-        h(
-            'a',
-            {
-              href: '/',
-              target: '_blank',
-            },
-            "Profile"
-        ),
-    key: 'profile',
+    label: () => h(RouterLink, {
+      to: {
+        name: "login",
+        params: {
+          lang: "en-US"
+        }
+      },
+    }, { default: () => "Login" }),
+    key: 'login',
   },
   {
-    label: 'Games',
-    key: 'games',
-  },
-  {
-    label: 'Developers',
-    key: 'developers',
-  },
-  {
-    label: 'Items',
-    key: 'items',
-  },
-  {
-    label: 'Admin',
-    key: 'admin'
+    label: () => h(RouterLink, {
+      to: {
+        name: "register",
+        params: {
+          lang: "en-US"
+        }
+      },
+    }, { default: () => "Register" }),
+    key: 'register',
   }
 ];
 </script>

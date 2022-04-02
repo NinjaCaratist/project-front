@@ -13,10 +13,13 @@ import { createStore } from "vuex";
 import { createRouter } from "vue-router";
 import { createWebHashHistory } from "vue-router";
 
-import MainPage from '@/pages/MainPage'
-import LoginPage from '@/pages/LoginPage'
+import LoginPage from '@/pages/Auth/LoginPage'
+import RegistrationPage from '@/pages/Auth/RegistrationPage'
 
-import { authGuard } from "@/guards/authGuards";
+import MainPage from '@/pages/MainPage'
+import TestPage from '@/pages/Tests/TestPage'
+
+//import { authGuard } from "@/guards/authGuards";
 
 const state = {
     user: null
@@ -27,21 +30,48 @@ const store = createStore({
     getters: {
         user: () => {
             return JSON.parse(localStorage.getItem('CURRENT_USER')) || null;
-        }
+        },
+        canPerformModerActions: () => {
+            const user = store.getters.user;
+            return !!(user && user.roles.includes('MODER'));
+        },
+        canPerformExamActions: () => {
+            const user = store.getters.user;
+            return !!(user && user.roles.includes('EXAM'));
+        },
+        canPerformUserActions: () => {
+            const user = store.getters.user;
+            return !!(user && user.roles.includes('USER'));
+        },
     },
 });
 
 const routes = [
     {
-        name: 'main',
         path: '/',
+        redirect: { name: 'tests' }
+    },
+    {
+        name: 'main',
+        path: '/main',
         component: MainPage,
-        beforeEnter: authGuard,
+        children: [
+            {
+                name: 'tests',
+                path: 'tests',
+                component: TestPage
+            }
+        ]
     },
     {
         name: 'login',
         path: '/login',
         component: LoginPage,
+    },
+    {
+        name: 'register',
+        path: '/register',
+        component: RegistrationPage,
     }
 ]
 
@@ -53,9 +83,14 @@ const router = createRouter({
 const app = createApp(App);
 
 axios.interceptors.request.use((config) => {
-    console.log('making a request')
+    const token = localStorage.getItem('token');
+
+    if (token) {
+        config.headers.common['token'] = token;
+    }
+
     return config;
-})
+}, error => Promise.reject(error))
 
 app.use(store)
 app.use(router)

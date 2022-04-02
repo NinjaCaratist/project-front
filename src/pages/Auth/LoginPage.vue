@@ -8,7 +8,7 @@
           <n-input v-model:value="formValue.username" placeholder="username" />
         </n-form-item>
         <n-form-item label="Password" path="password">
-          <n-input v-model:value="formValue.password" placeholder="password" />
+          <n-input v-model:value="formValue.password" placeholder="password" type="password" />
         </n-form-item>
         <n-button type="primary" style="width: 100%" @click="onSubmit">Submit</n-button>
       </n-form>
@@ -38,17 +38,12 @@ const formValue = ref({
 })
 
 async function onSubmit() {
-  // const response  = await axios.post('http://localhost:8080/api/login', formValue.value);
-  // const user      = response.data.user;
-  // const token     = response.data.token;
-  //
-  // console.log(store.state.user)
-  //
-  // localStorage.setItem('ACCESS_TOKEN', token.accessToken);
-  // localStorage.setItem('REFRESH_TOKEN', token.refreshToken);
-  // localStorage.setItem('CURRENT_USER', user);
-  //
-  // console.log(user)
+  const response  = await axios.post('http://localhost:8080/security/login', formValue.value);
+  const user      = response.data;
+  const token     = response.headers['x-auth-token'];
+
+  localStorage.setItem('TOKEN', token);
+  localStorage.setItem('CURRENT_USER', JSON.stringify(user));
 
   await router.push('/');
 }
