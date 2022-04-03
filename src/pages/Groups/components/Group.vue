@@ -17,7 +17,7 @@
 <script setup>
 
 import { useStore } from "vuex";
-import { inject, defineEmits } from "vue";
+import { inject } from "vue";
 
 const axios = inject('axios');
 const store = useStore();

@@ -13,10 +13,12 @@
 
 <script setup>
 import { h } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 import { useStore } from "vuex";
+import Button from "naive-ui/es/button/src/Button";
 
 const store = useStore();
+const router = useRouter();
 
 const authOptions = [
   {
@@ -75,6 +77,19 @@ const commonOptions = [
         }
       },
     }, { default: () => "Tests" }),
+    key: 'tests',
+  },
+  {
+    label: () => h(Button, {
+      onClick() {
+        localStorage.removeItem('TOKEN');
+        localStorage.removeItem('CURRENT_USER');
+
+        router.replace({
+          path: '/login',
+        })
+      }
+    }, 'Logout'),
     key: 'tests',
   },
 ];
