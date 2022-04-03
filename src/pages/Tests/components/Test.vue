@@ -5,16 +5,19 @@
     <n-space>
       <n-button class="enroll-button"
                 v-if="store.getters.canPerformUserActions"
-                @click="onEnroll"
+                @click="emit('enroll', test.id)"
                 :disabled="isActive">
         Enroll
       </n-button>
-      <n-button @click="onLeave">
+      <n-button v-if="store.getters.canPerformUserActions"
+                @click="emit('leave', test.id)">
         Leave
       </n-button>
-      <n-button>
-        <router-link :to="{ name: 'configureTest', params: { testId: test.id } }">Configure</router-link>
-      </n-button>
+
+      <router-link v-if="store.getters.canPerformExamActions"
+                   :to="{ name: 'configureTest', params: { testId: test.id } }" >
+        <n-button>Configure</n-button>
+      </router-link>
     </n-space>
     {{ isActive ? 'Test activated' : '' }}
   </n-card>
@@ -26,13 +29,9 @@ import { inject, defineEmits } from "vue";
 
 const axios = inject('axios');
 const store = useStore();
-const emit = defineEmits(['needRefresh']);
+const emit = defineEmits(['enroll, leave']);
 
 const props = defineProps({
-  userId: {
-    type: Number,
-    required: true
-  },
   test: {
     id: {
       type: Number,
@@ -52,27 +51,6 @@ const props = defineProps({
     default: false,
   }
 })
-
-const onEnroll = async () => {
-  const response = await axios.post('http://localhost:8080/users/tests/enroll', null, {
-    params: {
-      testId: props.test.id
-    }
-  });
-
-  emit('needRefresh');
-}
-
-const onLeave = async () => {
-  const response = await axios.delete('http://localhost:8080/users/tests/leave', {
-    data: {
-      testId: props.test.id,
-      userId: props.userId
-    }
-  })
-
-  emit('needRefresh')
-}
 </script>
 
 <style scoped>

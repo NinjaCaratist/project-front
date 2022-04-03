@@ -21,6 +21,8 @@ import TestPage from '@/pages/Tests/TestPage'
 
 import AddTest from '@/pages/Tests/components/AddTest';
 import ConfigureTest from '@/pages/Tests/components/ConfigureTest';
+import GroupsPage from "@/pages/Groups/GroupsPage";
+import ProfilePage from "@/pages/Profile/ProfilePage";
 
 //import { authGuard } from "@/guards/authGuards";
 
@@ -73,6 +75,16 @@ const routes = [
                 name: 'configureTest',
                 path: 'configure-test/:testId',
                 component: ConfigureTest
+            },
+            {
+                name: 'groups',
+                path: 'groups',
+                component: GroupsPage,
+            },
+            {
+                name: 'profile',
+                path: 'profile',
+                component: ProfilePage,
             }
         ]
     },
@@ -95,12 +107,34 @@ const router = createRouter({
 
 const app = createApp(App);
 
-axios.interceptors.request.use((config) => {
-    const token = localStorage.getItem('TOKEN');
+const formIgnorePair = (url, method) => ({ url, method });
 
-    if (token) {
-        config.headers.common['x-auth-token'] = token;
+const ignoreUrls = [
+    formIgnorePair('http://localhost:8080/tests', 'get'),
+    formIgnorePair('http://localhost:8080/tests/questions', 'get'),
+    formIgnorePair('http://localhost:8080/security/login', 'get'),
+    formIgnorePair('http://localhost:8080/security/registration', 'get'),
+];
+
+const isIgnored = (url, method) => {
+    for (const pair of ignoreUrls) {
+        if (url === pair.url && method === pair.method) {
+            return true;
+        }
     }
+
+    return false;
+}
+
+axios.interceptors.request.use((config) => {
+    if (!isIgnored(config.url, config.method)) {
+        const token = localStorage.getItem('TOKEN');
+
+        if (token) {
+            config.headers.common['x-auth-token'] = token;
+        }
+    }
+
 
     return config;
 }, error => Promise.reject(error))

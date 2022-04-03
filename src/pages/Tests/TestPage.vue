@@ -3,17 +3,19 @@
     <n-list bordered>
       <template #header>
         All the tests
-        <n-button v-if="store.getters.canPerformExamActions">
-          <router-link :to="{ name: 'addTest' }">Add New Test</router-link>
-        </n-button>
+
+        <router-link v-if="store.getters.canPerformExamActions"
+                     :to="{ name: 'addTest' }">
+          <n-button>
+            Add New Test
+          </n-button>
+        </router-link>
       </template>
 
       <n-list-item v-for="test in tests" :key="test.id">
 
-        <test :user-id="user.id"
-              :test="test"
-              :is-active="checkActive(test.id)"
-              @need-refresh="loadActiveTests"></test>
+        <test :test="test"
+              :is-active="checkActive(test.id)"></test>
 
       </n-list-item>
     </n-list>
@@ -36,7 +38,10 @@ const activeTests = ref([]);
 
 onMounted(async () => {
   await loadTests();
-  await loadActiveTests();
+
+  if (store.getters.canPerformUserActions) {
+    await loadActiveTests();
+  }
 })
 
 const loadTests = async () => {
@@ -51,6 +56,25 @@ const loadActiveTests = async () => {
 
 const checkActive = (testId) => {
   return activeTests.value.includes(testId);
+}
+
+const onEnroll = async (testId) => {
+  const response = await axios.post('http://localhost:8080/users/tests/enroll', null, {
+    params: { testId }
+  });
+
+  await loadActiveTests();
+}
+
+const onLeave = async (testId) => {
+  const response = await axios.delete('http://localhost:8080/users/tests/leave', {
+    params: {
+      testId: testId,
+      userId: user.id
+    }
+  })
+
+  await loadActiveTests();
 }
 
 </script>

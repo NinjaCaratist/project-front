@@ -63,8 +63,6 @@ async function onSubmit() {
 
   const response  = await axios.post('http://localhost:8080/security/registration', data);
 
-  console.log(response)
-
   await router.push('/login');
 }
 

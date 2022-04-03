@@ -14,8 +14,11 @@
 <script setup>
 import { h } from "vue";
 import { RouterLink } from "vue-router";
+import { useStore } from "vuex";
 
-const menuOptions = [
+const store = useStore();
+
+const authOptions = [
   {
     label: () => h(RouterLink, {
       to: {
@@ -39,6 +42,51 @@ const menuOptions = [
     key: 'register',
   }
 ];
+
+const commonOptions = [
+  {
+    label: () => h(RouterLink, {
+      to: {
+        name: "profile",
+        params: {
+          lang: "en-US"
+        }
+      },
+    }, { default: () => "Profile" }),
+    key: 'profile',
+  },
+  {
+    label: () => h(RouterLink, {
+      to: {
+        name: "groups",
+        params: {
+          lang: "en-US"
+        }
+      },
+    }, { default: () => "Groups" }),
+    key: 'groups',
+  },
+  {
+    label: () => h(RouterLink, {
+      to: {
+        name: "tests",
+        params: {
+          lang: "en-US"
+        }
+      },
+    }, { default: () => "Tests" }),
+    key: 'tests',
+  },
+];
+
+const menuOptions = [];
+
+if (!store.getters.user) {
+  menuOptions.push(...authOptions);
+} else {
+  menuOptions.push(...commonOptions);
+}
+
 </script>
 
 <style scoped lang="scss">

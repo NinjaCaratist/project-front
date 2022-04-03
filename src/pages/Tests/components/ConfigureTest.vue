@@ -2,34 +2,38 @@
 <div class="form-container">
   <n-card v-if="test" :title="test.name">
     {{ test.description }}
+    <n-h1>
+      <n-text type="primary">
+        Questions
+      </n-text>
+    </n-h1>
+
+    <n-button @click="showModal=true">Add Question</n-button>
+
+    <add-question :test-id="test.id"
+                  :show-modal="showModal"
+                  :on-update:show="value => (showModal = value)"
+                  @submit="onAddQuestion"></add-question>
+
+    <n-list-item v-for="question in questions" :key="question.id">
+
+    </n-list-item>
   </n-card>
-
-  <n-h1>
-    <n-text type="primary">
-      Questions
-    </n-text>
-  </n-h1>
-
-  <n-button @click="showModal=true">Add Question</n-button>
-  <add-question-modal :show="showModal" @closed="showModal=false"></add-question-modal>
-
-  <n-list-item v-for="question in questions" :key="question.id">
-
-  </n-list-item>
 </div>
 </template>
 
 <script setup>
-import { inject, onMounted, ref } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
-import AddQuestionModal from '@/pages/Tests/components/AddQuestionModal';
+import AddQuestion from '@/pages/Tests/components/Question/AddQuestion'
 
 const axios = inject('axios');
 const route = useRoute();
 
 const questions = ref([]);
 const test = ref(null);
+
 const showModal = ref(false);
 
 onMounted(() => {
@@ -48,17 +52,25 @@ const loadTest = async () => {
 }
 
 const loadQuestions = async () => {
-  const response = await axios.get('http://localhost:8080/tests/questions', {
+  const response = await axios.get(`http://localhost:8080/tests/questions`, {
     params: {
       testId: route.params.testId
     }
   })
+}
 
-  console.log(response)
+const onAddQuestion = async (data) => {
+  const response = await axios.post('http://localhost:8080/tests/questions', data);
+
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
+.modal {
+  min-height: 500px;
+  min-width: 1000px;
+}
+
 .form-container {
   @include default-container;
   margin: 5rem 10rem 5rem 10rem;

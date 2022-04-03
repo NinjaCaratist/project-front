@@ -34,7 +34,6 @@ const formValue = ref({
 const onSubmit = async () => {
   const response = await axios.post('http://localhost:8080/tests', formValue.value);
 
-  console.log(response)
 }
 </script>
 
