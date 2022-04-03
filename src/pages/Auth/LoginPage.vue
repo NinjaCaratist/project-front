@@ -8,9 +8,12 @@
           <n-input v-model:value="formValue.username" placeholder="username" />
         </n-form-item>
         <n-form-item label="Password" path="password">
-          <n-input v-model:value="formValue.password" placeholder="password" type="password" />
+          <n-input v-model:value="formValue.password" placeholder="password" type="password" :input-props="{ autoComplete: 'on' }"/>
         </n-form-item>
-        <n-button type="primary" style="width: 100%" @click="onSubmit">Submit</n-button>
+        <n-space vertical>
+          <n-button type="primary" style="width: 100%" @click="onSubmit">Submit</n-button>
+          <n-button type="primary" style="width: 100%" @click="onRegister">Register</n-button>
+        </n-space>
       </n-form>
     </div>
   </template>
@@ -46,6 +49,10 @@ async function onSubmit() {
   localStorage.setItem('CURRENT_USER', JSON.stringify(user));
 
   await router.push('/');
+}
+
+async function onRegister() {
+  await router.replace('/register');
 }
 /* eslint enable */
 </script>

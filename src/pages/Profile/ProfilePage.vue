@@ -47,7 +47,6 @@ import { useStore } from "vuex";
 const store = useStore();
 
 const user = store.getters.user;
-console.log(user)
 </script>
 
 <style scoped lang="scss">

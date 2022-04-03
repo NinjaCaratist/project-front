@@ -63,7 +63,6 @@ const emit = defineEmits(['submit']);
 
 const answers = ref([]);
 const totalScore = ref(0);
-const isCorrectAnswer = ref(false);
 
 const props = defineProps({
   testId: {
@@ -108,7 +107,12 @@ const reCalcPositions = () => {
 const onSubmit = () => {
   emit('submit', {
     description: formValue.value.description,
-    answers: answers.value.map(answer => toRaw(answer)),
+    answers: answers.value.map(answer => {
+      const rawAnswer = toRaw(answer);
+      delete rawAnswer['position'];
+
+      return rawAnswer;
+    }),
     testId: props.testId,
     totalScore: totalScore.value,
   });

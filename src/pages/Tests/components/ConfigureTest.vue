@@ -15,9 +15,12 @@
                   :on-update:show="value => (showModal = value)"
                   @submit="onAddQuestion"></add-question>
 
-    <n-list-item v-for="question in questions" :key="question.id">
+    <n-list>
+      <n-list-item v-for="question in questions" :key="question.id">
+        {{ question.description }}
+      </n-list-item>
+    </n-list>
 
-    </n-list-item>
   </n-card>
 </div>
 </template>
@@ -34,7 +37,7 @@ const route = useRoute();
 const questions = ref([]);
 const test = ref(null);
 
-const showModal = ref(false);
+let showModal = ref(false);
 
 onMounted(() => {
   loadTest();
@@ -57,6 +60,9 @@ const loadQuestions = async () => {
       testId: route.params.testId
     }
   })
+
+  console.log(response)
+  questions.value = response.data;
 }
 
 const onAddQuestion = async (data) => {

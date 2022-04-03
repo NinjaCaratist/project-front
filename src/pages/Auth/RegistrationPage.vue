@@ -1,6 +1,9 @@
 <template>
 <DefaultPage>
-  <template v-slot:header>Registration Page</template>
+  <template v-slot:header>
+    <n-button @click="onLogin" class="login-btn">Login</n-button>
+    Registration Page
+  </template>
   <template v-slot:body>
     <div class="auth-container">
       <n-form ref="formRef" :model="formValue">
@@ -66,6 +69,10 @@ async function onSubmit() {
   await router.push('/login');
 }
 
+async function onLogin() {
+  await router.replace('/login');
+}
+
 </script>
 
 <style scoped>
@@ -82,5 +89,12 @@ async function onSubmit() {
 
 .role-select {
   margin-bottom: 24px;
+}
+
+.login-btn {
+  position: absolute;
+
+  left: 3rem;
+  top: 3rem;
 }
 </style>

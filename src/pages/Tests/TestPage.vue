@@ -15,7 +15,9 @@
       <n-list-item v-for="test in tests" :key="test.id">
 
         <test :test="test"
-              :is-active="checkActive(test.id)"></test>
+              :is-active="checkActive(test.id)"
+              @enroll="onEnroll"
+              @leave="onLeave"></test>
 
       </n-list-item>
     </n-list>

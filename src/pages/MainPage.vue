@@ -12,11 +12,13 @@
 </template>
 
 <script setup>
-import { h } from "vue";
+import { h, inject } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import { useStore } from "vuex";
+
 import Button from "naive-ui/es/button/src/Button";
 
+const axios = inject('axios');
 const store = useStore();
 const router = useRouter();
 
@@ -81,15 +83,17 @@ const commonOptions = [
   },
   {
     label: () => h(Button, {
-      onClick() {
+      onClick: async () => {
+        await axios.post('http://localhost:8080/security/logout')
+
         localStorage.removeItem('TOKEN');
         localStorage.removeItem('CURRENT_USER');
 
-        router.replace({
+        await router.replace({
           path: '/login',
         })
       }
-    }, 'Logout'),
+    }, { default: () => "Logout" }),
     key: 'tests',
   },
 ];
