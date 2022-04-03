@@ -1,5 +1,5 @@
 <template>
-  <div class="tests-container">
+  <div class="form-container">
     <n-list bordered>
       <template #header>
         All the tests
@@ -79,10 +79,10 @@ const onLeave = async (testId) => {
 
 </script>
 
-<style scoped>
-.tests-container {
-  background: white;
-  margin: 0 1rem;
+<style scoped lang="scss">
+.form-container {
+  @include default-container;
+  margin: 5rem 10rem 5rem 10rem;
 }
 
 </style>

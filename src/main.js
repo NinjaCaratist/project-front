@@ -23,6 +23,8 @@ import AddTest from '@/pages/Tests/components/AddTest';
 import ConfigureTest from '@/pages/Tests/components/ConfigureTest';
 import GroupsPage from "@/pages/Groups/GroupsPage";
 import ProfilePage from "@/pages/Profile/ProfilePage";
+import AddGroup from "@/pages/Groups/components/AddGroup";
+import ConfigureGroup from "@/pages/Groups/components/ConfigureGroup";
 
 //import { authGuard } from "@/guards/authGuards";
 
@@ -82,6 +84,16 @@ const routes = [
                 component: GroupsPage,
             },
             {
+                name: 'addGroup',
+                path: 'add-group',
+                component: AddGroup,
+            },
+            {
+                name: 'configureGroup',
+                path: 'configure-group/:groupId',
+                component: ConfigureGroup
+            },
+            {
                 name: 'profile',
                 path: 'profile',
                 component: ProfilePage,
@@ -137,7 +149,27 @@ axios.interceptors.request.use((config) => {
 
 
     return config;
-}, error => Promise.reject(error))
+}, error => Promise.reject(error));
+
+axios.interceptors.response.use(response => {
+    return response;
+}, error => {
+    if (error.response) {
+        if (error.response.status === 403) {
+            localStorage.removeItem('TOKEN');
+            localStorage.removeItem('CURRENT_USER');
+
+            router.replace({
+                path: '/login',
+                query: {
+                    redirect: router.currentRoute.fullPath
+                }
+            })
+        }
+
+        return Promise.reject(error.response.data);
+    }
+})
 
 app.use(store)
 app.use(router)

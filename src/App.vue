@@ -25,5 +25,6 @@ const themeOverrides = {
 
 .n-config-provider {
   height: 100%;
+  overflow: hidden;
 }
 </style>
