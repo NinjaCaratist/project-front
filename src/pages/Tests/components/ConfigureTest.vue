@@ -61,7 +61,6 @@ const loadQuestions = async () => {
     }
   })
 
-  console.log(response)
   questions.value = response.data;
 }
 

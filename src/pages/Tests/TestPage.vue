@@ -29,14 +29,17 @@
 import { ref, inject, onMounted } from "vue";
 import Test from "@/pages/Tests/components/Test"
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 const axios = inject('axios');
 const store = useStore();
+const router = useRouter();
 
 const user = store.getters.user;
 
 const tests = ref([]);
 const activeTests = ref([]);
+
 
 onMounted(async () => {
   await loadTests();
@@ -65,7 +68,10 @@ const onEnroll = async (testId) => {
     params: { testId }
   });
 
-  await loadActiveTests();
+  await router.replace({
+    name: 'passTest',
+    params: { testId },
+  })
 }
 
 const onLeave = async (testId) => {

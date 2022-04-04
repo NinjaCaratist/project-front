@@ -25,6 +25,7 @@ import GroupsPage from "@/pages/Groups/GroupsPage";
 import ProfilePage from "@/pages/Profile/ProfilePage";
 import AddGroup from "@/pages/Groups/components/AddGroup";
 import ConfigureGroup from "@/pages/Groups/components/ConfigureGroup";
+import PassTestPage from '@/pages/Tests/components/PassTestPage';
 
 //import { authGuard } from "@/guards/authGuards";
 
@@ -77,6 +78,11 @@ const routes = [
                 name: 'configureTest',
                 path: 'configure-test/:testId',
                 component: ConfigureTest
+            },
+            {
+                name: 'passTest',
+                path: 'pass-test/:testId',
+                component: PassTestPage
             },
             {
                 name: 'groups',
