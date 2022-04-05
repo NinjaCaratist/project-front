@@ -116,6 +116,14 @@ const onSubmit = () => {
     testId: props.testId,
     totalScore: totalScore.value,
   });
+
+  clear();
+}
+
+const clear = () => {
+  formValue.value.description = '';
+  answerFormValue.value.description = '';
+  answers.value = [];
 }
 </script>
 

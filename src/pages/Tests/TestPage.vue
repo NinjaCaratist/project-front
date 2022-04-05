@@ -91,6 +91,9 @@ const onLeave = async (testId) => {
 .form-container {
   @include default-container;
   margin: 5rem 10rem 5rem 10rem;
+
+  max-height: 600px;
+  overflow-y: scroll;
 }
 
 </style>

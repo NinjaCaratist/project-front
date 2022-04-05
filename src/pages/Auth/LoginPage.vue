@@ -1,27 +1,33 @@
 <template>
-<DefaultPage>
-  <template v-slot:header>Login Page</template>
-  <template v-slot:body>
-    <div class="auth-container">
-      <n-form ref="formRef" :model="formValue">
-        <n-form-item label="Username" path="username">
-          <n-input v-model:value="formValue.username" placeholder="username" />
-        </n-form-item>
-        <n-form-item label="Password" path="password">
-          <n-input v-model:value="formValue.password" placeholder="password" type="password" :input-props="{ autoComplete: 'on' }"/>
-        </n-form-item>
-        <n-space vertical>
-          <n-button type="primary" style="width: 100%" @click="onSubmit">Submit</n-button>
-          <n-button type="primary" style="width: 100%" @click="onRegister">Register</n-button>
-        </n-space>
-      </n-form>
-    </div>
-  </template>
-</DefaultPage>
+  <n-modal v-model:show="showErrorModal"
+           preset="card"
+           title="Error!"
+           style="width: 600px;">
+    {{ errorText }}
+  </n-modal>
+  <DefaultPage>
+    <template v-slot:header>Login Page</template>
+    <template v-slot:body>
+      <div class="auth-container">
+        <n-form ref="formRef" :model="formValue">
+          <n-form-item label="Username" path="username">
+            <n-input v-model:value="formValue.username" placeholder="username"/>
+          </n-form-item>
+          <n-form-item label="Password" path="password">
+            <n-input v-model:value="formValue.password" placeholder="password" type="password"
+                     :input-props="{ autoComplete: 'on' }"/>
+          </n-form-item>
+          <n-space vertical>
+            <n-button type="primary" style="width: 100%" @click="onSubmit">Submit</n-button>
+            <n-button type="primary" style="width: 100%" @click="onRegister">Register</n-button>
+          </n-space>
+        </n-form>
+      </div>
+    </template>
+  </DefaultPage>
 </template>
 
 <script setup>
-/* eslint-disable */
 import DefaultPage from "@/pages/DefaultPage";
 
 import { ref } from "vue";
@@ -35,15 +41,28 @@ const axios = inject('axios');
 const store = useStore();
 const router = useRouter();
 
+const showErrorModal = ref(false);
+const errorText = ref('');
+
 const formValue = ref({
   username: '',
   password: ''
 })
 
 async function onSubmit() {
-  const response  = await axios.post('http://localhost:8080/security/login', formValue.value);
-  const user      = response.data;
-  const token     = response.headers['x-auth-token'];
+  try {
+    const response = await axios.post('http://localhost:8080/security/login', formValue.value);
+    await handleResponse(response);
+  }
+  catch (err) {
+    errorText.value = err;
+    showErrorModal.value = true;
+  }
+}
+
+const handleResponse = async (response) => {
+  const user = response.data;
+  const token = response.headers['x-auth-token'];
 
   localStorage.setItem('TOKEN', token);
   localStorage.setItem('CURRENT_USER', JSON.stringify(user));
@@ -54,7 +73,7 @@ async function onSubmit() {
 async function onRegister() {
   await router.replace('/register');
 }
-/* eslint enable */
+
 </script>
 
 <style>

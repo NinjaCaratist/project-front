@@ -1,5 +1,11 @@
 <template>
 <div class="form-container">
+  <n-modal v-model:show="showModal"
+           preset="card"
+           :title="modalHeader"
+           style="width: 600px;">
+    {{ modalText }}
+  </n-modal>
   <n-form>
     <n-form-item label="Name" path="name">
       <n-input v-model:value="formValue.name" placeholder="Test name" />
@@ -26,14 +32,28 @@ import { inject, ref } from "vue";
 const formRef = ref(null);
 const axios = inject('axios');
 
+const showModal = ref(false);
+const modalText = ref('');
+const modalHeader = ref('');
+
 const formValue = ref({
   name: '',
   description: '',
 })
 
 const onSubmit = async () => {
-  const response = await axios.post('http://localhost:8080/tests', formValue.value);
+  try {
+    const response = await axios.post('http://localhost:8080/tests', formValue.value);
 
+    modalHeader.value = 'Success!';
+    modalText.value = 'The test has been successfully added';
+    showModal.value = true;
+  }
+  catch(err) {
+    modalHeader.value = 'Failure!';
+    modalText.value = err;
+    showModal.value = true;
+  }
 }
 </script>
 

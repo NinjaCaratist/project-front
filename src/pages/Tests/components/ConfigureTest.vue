@@ -1,5 +1,12 @@
 <template>
 <div class="form-container">
+  <n-modal v-model:show="showInfoModal"
+           preset="card"
+           title="Error!"
+           style="width: 600px;">
+    {{ infoModalText }}
+  </n-modal>
+
   <n-card v-if="test" :title="test.name">
     {{ test.description }}
     <n-h1>
@@ -39,34 +46,62 @@ const test = ref(null);
 
 let showModal = ref(false);
 
+const showInfoModal = ref(false);
+const showModalHeader = ref('');
+const infoModalText = ref('');
+
 onMounted(() => {
   loadTest();
   loadQuestions();
 })
 
 const loadTest = async () => {
-  const response = await axios.get('http://localhost:8080/tests', {
-    params: {
-      id: route.params.testId
-    }
-  });
+  try {
+    const response = await axios.get('http://localhost:8080/tests', {
+      params: {
+        id: route.params.testId
+      }
+    });
 
-  test.value = response.data[0];
+    test.value = response.data[0];
+  }
+  catch(err) {
+    showModalHeader.value = 'Failure';
+    infoModalText.value = err;
+    showInfoModal.value = true;
+  }
 }
 
 const loadQuestions = async () => {
-  const response = await axios.get(`http://localhost:8080/tests/questions`, {
-    params: {
-      testId: route.params.testId
-    }
-  })
-
-  questions.value = response.data;
+  try {
+    const response = await axios.get(`http://localhost:8080/tests/questions`, {
+      params: {
+        testId: route.params.testId
+      }
+    })
+    questions.value = response.data;
+  }
+  catch(err) {
+    showModalHeader.value = 'Failure';
+    infoModalText.value = err;
+    showInfoModal.value = true;
+  }
 }
 
 const onAddQuestion = async (data) => {
-  const response = await axios.post('http://localhost:8080/tests/questions', data);
+  try {
+    const response = await axios.post('http://localhost:8080/tests/questions', data);
+    await loadQuestions();
 
+    showModalHeader.value = 'Success';
+    infoModalText.value = 'The question has been successfully added';
+    showInfoModal.value = true;
+  }
+  catch(err) {
+    showModalHeader.value = 'Failure';
+    infoModalText.value = err;
+    showInfoModal.value = true;
+  }
 }
 </script>
 

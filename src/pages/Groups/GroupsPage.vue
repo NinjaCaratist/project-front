@@ -1,5 +1,11 @@
 <template>
   <div class="form-container">
+    <n-modal v-model:show="showModal"
+             preset="card"
+             :title="modalHeader"
+             style="width: 600px;">
+      {{ modalText }}
+    </n-modal>
     <n-list class="groups-list" bordered>
       <template #header>
         All the groups
@@ -31,13 +37,24 @@ const axios = inject('axios');
 
 const groups = ref([]);
 
+const showModal   = ref(false);
+const modalText   = ref('');
+const modalHeader = ref('');
+
 onMounted(() => {
   loadGroups();
 })
 
 const loadGroups = async () => {
-  const response = await axios.get('http://localhost:8080/groups');
-  groups.value = response.data;
+  try {
+    const response = await axios.get('http://localhost:8080/groups');
+    groups.value = response.data;
+  }
+  catch(err) {
+    modalHeader.value = 'Cannot load the groups';
+    modalText.value   = err;
+    showModal.value   = true;
+  }
 }
 </script>
 

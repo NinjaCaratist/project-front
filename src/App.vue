@@ -1,12 +1,12 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
-    <router-view></router-view>
+      <router-view></router-view>
   </n-config-provider>
 </template>
 
 <script setup>
 import { NConfigProvider } from "naive-ui";
-
+import { onErrorCaptured } from "vue";
 const themeOverrides = {
   common: {
     primaryColor: '#5a86c5',
@@ -15,6 +15,10 @@ const themeOverrides = {
     primaryColorSuppl: '#4274b9',
   }
 }
+
+onErrorCaptured((err) => {
+  console.log('CAPTURED!')
+})
 
 </script>
 
