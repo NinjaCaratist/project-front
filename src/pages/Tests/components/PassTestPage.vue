@@ -1,5 +1,11 @@
 <template>
 <div class="form-container">
+  <n-modal v-model:show="showModal"
+           preset="card"
+           :title="modalHeader"
+           style="width: 600px;">
+    {{ modalText }}
+  </n-modal>
   <n-space vertical>
     <n-steps :current="current" :status="currentStatus">
       <n-step
@@ -11,7 +17,7 @@
       <n-step title="review" description="check your answers"></n-step>
     </n-steps>
     <template v-if="current <= questions.length">
-      <n-space vertical>
+      <n-space vertical class="answers-container">
         <n-list>
           <n-checkbox-group v-model:value="chosenAnswers"
                             @update:value="refreshAnswersMap">
@@ -51,7 +57,7 @@
             </n-icon>
           </template>
         </n-button>
-        <n-button type="primary">
+        <n-button type="primary" @click="onSubmit">
           Submit
         </n-button>
       </n-space>
@@ -76,6 +82,10 @@ const currentStatus = ref("process");
 
 const chosenAnswers = ref(null);
 const answersMap = ref(new Map());
+
+const showModal = ref(false);
+const modalText = ref('');
+const modalHeader = ref('');
 
 const getCurrentQuestionId = () => {
   return questions.value[current.value - 1]?.id;
@@ -122,14 +132,6 @@ const refreshAnswersMap = () => {
   answersMap.value.set(getCurrentQuestionId(), toRaw(chosenAnswers.value));
 }
 
-const loadData = async () => {
-  if (current.value <= questions.value.length) {
-    await loadAnswers()
-  } else {
-
-  }
-}
-
 const loadAnswers = async () => {
   const questionId = getCurrentQuestionId();
   if (!questionId) return;
@@ -141,6 +143,39 @@ const loadAnswers = async () => {
   })
 
   answers.value = response.data;
+  answers.value = answers.value.map((answer, idx) => {
+    answer.position = idx;
+
+    return answer;
+  })
+}
+
+const onSubmit = async () => {
+  if (current.value !== questions.value.length + 1) {
+    current.value = questions.value.length + 1;
+  } else {
+    const data = [];
+
+    for (const arr of answersMap.value.values()) {
+      data.push(...arr);
+    }
+
+    try {
+      const response = await axios.post('http://localhost:8080/users/tests/pass', {
+        answers: data,
+        testId: route.params.testId
+      })
+
+      modalHeader.value = 'Success';
+      modalText.value = 'Test data has been sent';
+      showModal.value = true;
+    }
+    catch(err) {
+      modalHeader.value = 'Failed to send the test data';
+      modalText.value = err;
+      showModal.value = true;
+    }
+  }
 }
 
 </script>
@@ -153,5 +188,10 @@ const loadAnswers = async () => {
 
 .review-table {
   width: 30%;
+}
+
+.answers-container {
+  height: 200px;
+  overflow-y: scroll;
 }
 </style>

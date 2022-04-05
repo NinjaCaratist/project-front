@@ -13,12 +13,11 @@
       </template>
 
       <n-list-item v-for="test in tests" :key="test.id">
-
         <test :test="test"
               :is-active="checkActive(test.id)"
               @enroll="onEnroll"
+              @continue="onContinue"
               @leave="onLeave"></test>
-
       </n-list-item>
     </n-list>
   </div>
@@ -68,6 +67,13 @@ const onEnroll = async (testId) => {
     params: { testId }
   });
 
+  await router.replace({
+    name: 'passTest',
+    params: { testId },
+  })
+}
+
+const onContinue = async (testId) => {
   await router.replace({
     name: 'passTest',
     params: { testId },

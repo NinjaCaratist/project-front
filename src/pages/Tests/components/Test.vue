@@ -5,9 +5,8 @@
     <n-space>
       <n-button class="enroll-button"
                 v-if="store.getters.canPerformUserActions"
-                @click="emit('enroll', test.id)"
-                :disabled="isActive">
-        Enroll
+                @click="onEnroll">
+        {{ isActive ? 'Continue' : 'Enroll' }}
       </n-button>
       <n-button v-if="store.getters.canPerformUserActions"
                 @click="emit('leave', test.id)">
@@ -19,7 +18,6 @@
         <n-button>Configure</n-button>
       </router-link>
     </n-space>
-    {{ isActive ? 'Test activated' : '' }}
   </n-card>
 </template>
 
@@ -30,6 +28,14 @@ import { inject, defineEmits } from "vue";
 const axios = inject('axios');
 const store = useStore();
 const emit = defineEmits(['enroll, leave']);
+
+const onEnroll = () => {
+  if (props.isActive) {
+    emit('continue', props.test.id)
+  } else {
+    emit('enroll', props.test.id)
+  }
+}
 
 const props = defineProps({
   test: {
