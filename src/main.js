@@ -162,7 +162,8 @@ axios.interceptors.response.use(response => {
 }, error => {
     if (error.response) {
         if (error.response.status === 403) {
-            if (error.response.data?.error === 'Invalid token') {
+            if (error.response.data?.error === 'Invalid token' ||
+                error.response.data?.error === 'Failed to refresh token') {
                 localStorage.removeItem('TOKEN');
                 localStorage.removeItem('CURRENT_USER');
 

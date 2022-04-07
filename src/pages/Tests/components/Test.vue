@@ -15,12 +15,11 @@
         Leave
       </n-button>
       {{ isPassed ? 'Test is passed' : '' }}
-
-      <router-link v-if="store.getters.canPerformExamActions || store.getters.canPerformModerActions"
-                   :to="{ name: 'configureTest', params: { testId: test.id } }" >
-        <n-button>Configure</n-button>
-      </router-link>
     </n-space>
+    <router-link v-if="store.getters.canPerformExamActions || store.getters.canPerformModerActions"
+                 :to="{ name: 'configureTest', params: { testId: test.id } }" >
+      <n-button>Configure</n-button>
+    </router-link>
   </n-card>
 </template>
 

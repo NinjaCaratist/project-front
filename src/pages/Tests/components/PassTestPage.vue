@@ -19,12 +19,12 @@
     <template v-if="current <= questions.length">
       <n-space vertical class="answers-container">
         <n-list>
-          <n-checkbox-group v-model:value="chosenAnswers"
-                            @update:value="refreshAnswersMap">
+          <n-checkbox-group v-model:value="chosenAnswers">
             <n-space vertical>
-              <n-checkbox v-for="answer in answers"
+              <n-checkbox v-for="answer in availableAnswers"
                           :key="answer.id"
                           :value="answer.id"
+                          :checked="answer.isChecked"
                           :label="answer.description"/>
             </n-space>
           </n-checkbox-group>
@@ -34,9 +34,10 @@
     <template v-else>
       <n-table class="review-table">
         <tbody>
-          <tr v-for="question in questions" :key="question.id">
-            <td>{{ question.description }}</td>
-            <td>{{ answersMap.get(question.id) }}</td>
+          <tr v-for="data in getReviewData()"
+              :key="data.key">
+            <td>{{ data.description }}</td>
+            <td>{{ data.answers.map(id => getAnswerById(data.questionId, id).description) }}</td>
           </tr>
         </tbody>
       </n-table>
@@ -74,27 +75,28 @@ import { MdArrowRoundBack, MdArrowRoundForward } from "@vicons/ionicons4";
 const route = useRoute();
 const axios = inject('axios');
 
-const questions = ref([]);
-const answers = ref([]);
-
 const current = ref(1);
 const currentStatus = ref("process");
 
-const chosenAnswers = ref(null);
-const answersMap = ref(new Map());
+const questions = ref([]);
 
-const showModal = ref(false);
-const modalText = ref('');
+const availableAnswers = ref([]);
+const chosenAnswers = ref([]);
+
+const data = new Map();
+
+const showModal   = ref(false);
+const modalText   = ref('');
 const modalHeader = ref('');
-
-const getCurrentQuestionId = () => {
-  return questions.value[current.value - 1]?.id;
-}
 
 onMounted(async () => {
     await loadQuestions();
     await loadAnswers();
 })
+
+const getCurrentQuestionId = () => {
+  return questions.value[current.value - 1]?.id;
+}
 
 const next = () => {
   if (current.value !== questions.value.length + 1) {
@@ -120,16 +122,6 @@ const loadQuestions = async () => {
   });
 
   questions.value = response.data;
-  initAnswersMap();
-}
-
-const initAnswersMap = () => {
-  answersMap.value = new Map();
-  questions.value.forEach(question => answersMap.value.set(question.id, []));
-}
-
-const refreshAnswersMap = () => {
-  answersMap.value.set(getCurrentQuestionId(), toRaw(chosenAnswers.value));
 }
 
 const loadAnswers = async () => {
@@ -140,34 +132,30 @@ const loadAnswers = async () => {
     params: {
       questionId: getCurrentQuestionId(),
     }
-  })
+  });
 
-  answers.value = response.data;
-  answers.value = answers.value.map((answer, idx) => {
-    answer.position = idx;
+  data.set(questionId, []);
+
+  availableAnswers.value = response.data.map(answer => {
+    answer.isChecked = false;
+    data.get(questionId).push(answer);
 
     return answer;
-  })
+  });
 }
 
 const onSubmit = async () => {
   if (current.value !== questions.value.length + 1) {
     current.value = questions.value.length + 1;
   } else {
-    const data = [];
-
-    for (const arr of answersMap.value.values()) {
-      data.push(...arr);
-    }
-
     try {
       const response = await axios.post('http://localhost:8080/users/tests/pass', {
-        answers: data,
+        answers: toRaw(chosenAnswers.value),
         testId: route.params.testId
-      })
+      });
 
       modalHeader.value = 'Success';
-      modalText.value = 'Test data has been sent';
+      modalText.value = `Test data has been sent. Your result is: ${response.data}`;
       showModal.value = true;
     }
     catch(err) {
@@ -178,12 +166,53 @@ const onSubmit = async () => {
   }
 }
 
+const getReviewData = () => {
+  const reviewData = [];
+
+  for (const question of questions.value) {
+    const answers = filterAnswers(toRaw(chosenAnswers.value), question.id);
+
+    reviewData.push({
+      description: question.description,
+      questionId: question.id,
+      answers: answers,
+      key: question.id
+    })
+  }
+
+  return reviewData;
+}
+
+const getAnswerById = (questionId, answerId) => {
+  const answers = data.get(questionId);
+  for (const answer of answers) {
+    if (answer.id === answerId) return answer;
+  }
+
+  return null;
+}
+
+const filterAnswers = (answers, questionId) => {
+  const correctAnswers = data.get(questionId);
+
+  return answers.filter(answerId => {
+    for (const correct of correctAnswers) {
+      if (correct.id === answerId) return true;
+    }
+
+    return false;
+  });
+}
+
 </script>
 
 <style scoped lang="scss">
 .form-container {
   @include default-container;
   margin: 5rem 10rem 5rem 10rem;
+
+  max-height: 600px;
+  overflow-y: scroll;
 }
 
 .review-table {

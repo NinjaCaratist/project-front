@@ -3,7 +3,8 @@
   <n-modal v-model:show="showInfoModal"
            preset="card"
            title="Error!"
-           style="width: 600px;">
+           style="width: 600px;"
+           @after-leave="onModalClosed">
     {{ infoModalText }}
   </n-modal>
 
@@ -15,7 +16,10 @@
       </n-text>
     </n-h1>
 
-    <n-button @click="showModal=true">Add Question</n-button>
+    <n-space>
+      <n-button @click="showModal=true">Add Question</n-button>
+      <n-button @click="onDeleteTest">Delete test</n-button>
+    </n-space>
 
     <add-question :test-id="test.id"
                   :show-modal="showModal"
@@ -34,11 +38,12 @@
 
 <script setup>
 import { inject, onMounted, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import AddQuestion from '@/pages/Tests/components/Question/AddQuestion'
 
 const axios = inject('axios');
+const router = useRouter();
 const route = useRoute();
 
 const questions = ref([]);
@@ -49,6 +54,7 @@ const showModal = ref(false);
 const showInfoModal = ref(false);
 const showModalHeader = ref('');
 const infoModalText = ref('');
+let isTestDeleted = false;
 
 onMounted(() => {
   loadTest();
@@ -101,6 +107,34 @@ const onAddQuestion = async (data) => {
     showModalHeader.value = 'Failure';
     infoModalText.value = err;
     showInfoModal.value = true;
+  }
+}
+
+const onDeleteTest = async () => {
+  try {
+    const response = await axios.delete('http://localhost:8080/tests', {
+      params: {
+        testId: test.value.id
+      }
+    });
+
+    showModalHeader.value = 'Success!';
+    infoModalText.value = 'Test has been successfully deleted';
+    showInfoModal.value = true;
+    isTestDeleted = true;
+  }
+  catch(err) {
+    showModalHeader.value = 'Failed to delete the test';
+    infoModalText.value = err;
+    showInfoModal.value = true;
+  }
+}
+
+const onModalClosed = async () => {
+  if (isTestDeleted) {
+    await router.replace({
+      name: 'tests',
+    })
   }
 }
 </script>
