@@ -5,15 +5,18 @@
     <n-space>
       <n-button class="enroll-button"
                 v-if="store.getters.canPerformUserActions"
-                @click="onEnroll">
+                @click="onEnroll"
+                :disabled="isPassed">
         {{ isActive ? 'Continue' : 'Enroll' }}
       </n-button>
       <n-button v-if="store.getters.canPerformUserActions"
-                @click="emit('leave', test.id)">
+                @click="emit('leave', test.id)"
+                :disabled="isPassed">
         Leave
       </n-button>
+      {{ isPassed ? 'Test is passed' : '' }}
 
-      <router-link v-if="store.getters.canPerformExamActions"
+      <router-link v-if="store.getters.canPerformExamActions || store.getters.canPerformModerActions"
                    :to="{ name: 'configureTest', params: { testId: test.id } }" >
         <n-button>Configure</n-button>
       </router-link>
@@ -53,6 +56,10 @@ const props = defineProps({
     }
   },
   isActive: {
+    type: Boolean,
+    default: false,
+  },
+  isPassed: {
     type: Boolean,
     default: false,
   }

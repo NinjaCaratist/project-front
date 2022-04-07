@@ -162,15 +162,17 @@ axios.interceptors.response.use(response => {
 }, error => {
     if (error.response) {
         if (error.response.status === 403) {
-            localStorage.removeItem('TOKEN');
-            localStorage.removeItem('CURRENT_USER');
+            if (error.response.data?.error === 'Invalid token') {
+                localStorage.removeItem('TOKEN');
+                localStorage.removeItem('CURRENT_USER');
 
-            router.replace({
-                path: '/login',
-                query: {
-                    redirect: router.currentRoute.fullPath
-                }
-            })
+                router.replace({
+                    path: '/login',
+                    query: {
+                        redirect: router.currentRoute.fullPath
+                    }
+                })
+            }
         }
 
         return Promise.reject(error.response.data.error);

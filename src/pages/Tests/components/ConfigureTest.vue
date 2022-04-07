@@ -44,7 +44,7 @@ const route = useRoute();
 const questions = ref([]);
 const test = ref(null);
 
-let showModal = ref(false);
+const showModal = ref(false);
 
 const showInfoModal = ref(false);
 const showModalHeader = ref('');

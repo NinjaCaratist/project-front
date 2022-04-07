@@ -19,9 +19,7 @@
       </template>
 
       <n-list-item v-for="group in groups" :key="group.id">
-
         <group :group="group"></group>
-
       </n-list-item>
     </n-list>
   </div>
